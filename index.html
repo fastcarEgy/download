@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <title>موقعي</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #101114;
+      color: #f5f5f5;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      background: #050708;
+    }
+
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: 18px;
+      background: #101114;
+      transition: opacity 350ms ease, visibility 350ms ease;
+    }
+
+    .loading-screen.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .custom-loader {
+      width: 70px;
+      height: 70px;
+      background: #ffa600;
+      border-radius: 50px;
+      -webkit-mask: radial-gradient(circle 31px at 50% calc(100% + 13px),#000 95%,#0000) top 4px left 50%,
+        radial-gradient(circle 31px,#000 95%,#0000) center,
+        radial-gradient(circle 31px at 50% -13px,#000 95%,#0000) bottom 4px left 50%,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      -webkit-mask-repeat: no-repeat;
+      animation: cu10 1.5s infinite;
+    }
+
+    @keyframes cu10 {
+      0% { -webkit-mask-size: 0 18px,0 18px,0 18px,auto; }
+      16.67% { -webkit-mask-size: 100% 18px,0 18px,0 18px,auto; }
+      33.33% { -webkit-mask-size: 100% 18px,100% 18px,0 18px,auto; }
+      50% { -webkit-mask-size: 100% 18px,100% 18px,100% 18px,auto; }
+      66.67% { -webkit-mask-size: 0 18px,100% 18px,100% 18px,auto; }
+      83.33% { -webkit-mask-size: 0 18px,0 18px,100% 18px,auto; }
+      100% { -webkit-mask-size: 0 18px,0 18px,0 18px,auto; }
+    }
+
+    .loading-label { margin: 0; color: #b7b3ab; font-size: 14px; }
+
+    main {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 52%, rgb(15 118 110 / 24%), transparent 44%),
+        radial-gradient(ellipse at 50% 50%, #101820 0, #080b0d 58%, #050708 100%);
+    }
+
+    .animated-grid {
+      position: absolute;
+      z-index: -1;
+      inset: -50%;
+      opacity: .2;
+      background-image: repeating-linear-gradient(100deg, #64748b 0, #64748b 1px, transparent 1px, transparent 4%);
+      -webkit-mask-image: radial-gradient(ellipse at center, transparent 30%, #000 85%);
+      mask-image: radial-gradient(ellipse at center, transparent 30%, #000 85%);
+      animation: grid-drift 40s linear infinite alternate;
+    }
+
+    .circle-glow {
+      position: absolute;
+      z-index: -1;
+      width: min(86vw, 620px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, rgb(15 118 110 / 26%), transparent 70%);
+      filter: blur(60px);
+    }
+
+    .circles {
+      position: absolute;
+      z-index: -1;
+      width: min(76vw, 480px);
+      aspect-ratio: 1;
+      pointer-events: none;
+    }
+
+    .circle {
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgb(244 63 94 / 40%);
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgb(239 68 68 / 18%), transparent 65%);
+      box-shadow: inset 0 0 48px rgb(244 63 94 / 7%), 0 0 34px rgb(244 63 94 / 8%);
+      animation: circle-pulse 5s ease-in-out infinite;
+    }
+
+    .circle:nth-child(2) {
+      inset: 8%;
+      border-color: rgb(251 113 133 / 38%);
+      background: linear-gradient(135deg, rgb(251 113 133 / 14%), transparent 65%);
+      animation-delay: -1.6s;
+    }
+
+    .circle:nth-child(3) {
+      inset: 16%;
+      border-color: rgb(100 116 139 / 34%);
+      background: linear-gradient(135deg, rgb(148 163 184 / 10%), transparent 65%);
+      animation-delay: -3.2s;
+    }
+
+    .button {
+      --width: 120px;
+      --height: 42px;
+      --tooltip-height: 35px;
+      --tooltip-width: 90px;
+      --gap-between-tooltip-to-button: 18px;
+      --button-color: #1163ff;
+      --tooltip-color: #fff;
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: var(--width);
+      height: var(--height);
+      overflow: visible;
+      border-radius: .45em;
+      background: var(--button-color);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      text-decoration: none;
+      transition: background .3s;
+    }
+
+    .button::before {
+      position: absolute;
+      left: calc(50% - var(--tooltip-width) / 2);
+      bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
+      width: var(--tooltip-width);
+      height: var(--tooltip-height);
+      border-radius: .25em;
+      background: var(--tooltip-color);
+      color: #111;
+      content: attr(data-tooltip);
+      font-size: .9rem;
+      line-height: var(--tooltip-height);
+      opacity: 0;
+      visibility: hidden;
+      transition: all .5s;
+    }
+
+    .button::after {
+      position: absolute;
+      left: calc(50% - 10px);
+      bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
+      width: 0;
+      height: 0;
+      border: 10px solid transparent;
+      border-top-color: var(--tooltip-color);
+      content: '';
+      opacity: 0;
+      visibility: hidden;
+      transition: all .5s;
+    }
+
+    .button-wrapper, .button .text, .button .icon {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    .button .text { top: 0; display: flex; align-items: center; justify-content: center; transition: top .5s; }
+    .button .icon { top: 100%; display: flex; align-items: center; justify-content: center; transition: top .5s; }
+    .button .icon svg { width: 24px; height: 24px; }
+    .button:hover, .button:focus-visible { background: #6c18ff; }
+    .button:hover .text, .button:focus-visible .text { top: -100%; }
+    .button:hover .icon, .button:focus-visible .icon { top: 0; }
+    .button:hover::before, .button:hover::after,
+    .button:focus-visible::before, .button:focus-visible::after { opacity: 1; visibility: visible; }
+    .button:hover::after, .button:focus-visible::after { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px); }
+    .button:hover::before, .button:focus-visible::before { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button)); }
+    .button:focus-visible { outline: 2px solid #fff; outline-offset: 5px; }
+
+    @keyframes grid-drift {
+      from { transform: translate3d(-4%, -4%, 0); }
+      to { transform: translate3d(4%, 4%, 0); }
+    }
+
+    @keyframes circle-pulse {
+      0%, 100% { transform: rotate(0deg) scale(1); opacity: .78; }
+      50% { transform: rotate(180deg) scale(1.08); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-screen" id="loading-screen" role="status" aria-live="polite">
+    <div class="custom-loader" aria-hidden="true"></div>
+    <p class="loading-label">جاري التحميل…</p>
+  </div>
+
+  <main>
+    <div class="animated-grid" aria-hidden="true"></div>
+    <div class="circle-glow" aria-hidden="true"></div>
+    <div class="circles" aria-hidden="true">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    <a class="button" href="https://mega.nz/file/tmgVzCDa#reHBSlWLwyi3cCPSsU47O-7iLsm_QAE0U-qDCSeNqlc" data-tooltip="Size: 46.0 MB" aria-label="Download" target="_blank" rel="noopener noreferrer">
+      <span class="button-wrapper">
+        <span class="text">Download</span>
+        <span class="icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path d="M12 15V3m0 12-4-4m4 4 4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+          </svg>
+        </span>
+      </span>
+    </a>
+  </main>
+
+  <script>
+    const loadingScreen = document.getElementById('loading-screen');
+    const hideLoader = () => {
+      window.setTimeout(() => loadingScreen.classList.add('is-hidden'), 7000);
+    };
+
+    if (document.readyState === 'complete') {
+      hideLoader();
+    } else {
+      window.addEventListener('load', hideLoader, { once: true });
+    }
+
+  </script>
+</body>
+</html>
